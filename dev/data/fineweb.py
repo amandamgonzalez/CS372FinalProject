@@ -28,8 +28,6 @@ import tiktoken
 from datasets import load_dataset
 from tqdm import tqdm
 
-from transformers import AutoTokenizer
-
 
 from data_common import write_datafile
 # ------------------------------------------
@@ -37,7 +35,7 @@ from data_common import write_datafile
 parser = argparse.ArgumentParser(description="FineWeb and Edu-FineWeb dataset preprocessing")
 parser.add_argument("-t", "--type", type=str, default="classic", help="Fineweb type, edu|classic")
 parser.add_argument("-v", "--version", type=str, default="10B", help="Fineweb data sample size, 10B|100B")
-parser.add_argument("-m", "--model_desc", type=str, default="gpt-2", help="Model descriptor, gpt-2|llama-3")
+parser.add_argument("-m", "--model_desc", type=str, default="gpt-2", help="Model descriptor, gpt-2")
 parser.add_argument("-s", "--shard_size", type=int, default=10**8, help="Size of each data shard in the output .bin files, in tokens")
 args = parser.parse_args()
 
@@ -56,25 +54,17 @@ local_dir, remote_name = directories[(args.type, args.version)]
 DATA_CACHE_DIR = os.path.join(os.path.dirname(__file__), local_dir)
 os.makedirs(DATA_CACHE_DIR, exist_ok=True)
 
+HF_CACHE_DIR = os.path.join(DATA_CACHE_DIR, "hf_cache")
+os.makedirs(HF_CACHE_DIR, exist_ok=True)
+
 # download the dataset
 if args.type == "classic":
-    fw = load_dataset("HuggingFaceFW/fineweb", name=remote_name, split="train")
+    fw = load_dataset("HuggingFaceFW/fineweb", name=remote_name, split="train", cache_dir=HF_CACHE_DIR)
     name = "fineweb"
 elif args.type =="edu":
-    fw = load_dataset("HuggingFaceFW/fineweb-edu", name=remote_name, split="train")
+    fw = load_dataset("HuggingFaceFW/fineweb-edu", name=remote_name, split="train", cache_dir=HF_CACHE_DIR)
     name = "edu_fineweb"
 
-def tokenize_llama(doc):
-    # tokenizes a single document and returns a numpy array of uint32 tokens
-    tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3.1-8B")
-    encode = lambda s: tokenizer.encode(s, add_special_tokens=False, verbose=False, split_special_tokens=True)
-    eot = tokenizer.encode('')[0] # by default the tokenizer adds the EOT token (128000)
-    tokens = [eot] # the special <|endoftext|> token delimits all documents
-    tokens.extend(encode(doc["text"]))
-    tokens_np = np.array(tokens)
-    assert (0 <= tokens_np).all() and (tokens_np < 2**32).all(), "token dictionary too large for uint32"
-    tokens_np_uint = tokens_np.astype(np.uint32)
-    return tokens_np_uint
 
 def tokenize_gpt2(doc):
     # tokenizes a single document and returns a numpy array of uint16 tokens
@@ -90,7 +80,6 @@ def tokenize_gpt2(doc):
 
 token_dtype = {
     "gpt-2": np.uint16,
-    "llama-3": np.uint32
 }[args.model_desc]
 
 # tokenize all documents and write output shards, each of shard_size tokens (last shard has remainder)
@@ -105,8 +94,6 @@ with mp.Pool(nprocs) as pool:
     tokenize = lambda x: None
     if args.model_desc == "gpt-2":
         tokenize = tokenize_gpt2
-    elif args.model_desc == "llama-3":
-        tokenize = tokenize_llama
     else:
         raise ValueError(f"unknown model {args.model_desc}")
 
