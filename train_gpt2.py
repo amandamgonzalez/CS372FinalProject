@@ -1,6 +1,6 @@
 """
-Made by: Amanda Gonzalez
-Adapted from https://github.com/karpathy/llm.c
+made by https://github.com/amandamgonzalez
+adapted from https://github.com/karpathy/llm.c
 """
 
 import os
