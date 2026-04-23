@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from torch.distributed.optim import ZeroRedundancyOptimizer
 from dataclasses import dataclass
 from .utils import print0
-from .attention import SoftmaxAttention, SparsemaxAttention, DynamicReluAttention
+from .attention import SoftmaxAttention, SparsemaxAttention, DynamicReluAttention, Entmax15Attention, DynamicReluSquareAttention
 
 
 # -----------------------------------------------------------------------------
@@ -44,15 +44,20 @@ class Block(nn.Module):
                 self.attn = SoftmaxAttention(config)
             case "sparsemax":
                 self.attn = SparsemaxAttention(config)
+            case "entmax15":
+                self.attn = Entmax15Attention(config)
             case "dynamic_relu":
                 self.attn = DynamicReluAttention(config)
+            case "dynamic_relu_square":
+                self.attn = DynamicReluSquareAttention(config)
             case _:
                 raise ValueError(f"no such attention {config.attn_type}")
         self.ln_2 = nn.LayerNorm(config.n_embd)
         self.mlp = MLP(config)
 
     def forward(self, x):
-        x = x + self.attn(self.ln_1(x))
+        out, _ = self.attn(self.ln_1(x))
+        x = x + out
         x = x + self.mlp(self.ln_2(x))
         return x
 
@@ -66,7 +71,7 @@ class GPTConfig:
     n_layer: int = 12
     n_head: int = 12
     n_embd: int = 768
-    attn_type: float = "softmax"
+    attn_type: str = "softmax"
 
 class GPT(nn.Module):
 

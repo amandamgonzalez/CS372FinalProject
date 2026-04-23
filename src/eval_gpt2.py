@@ -14,7 +14,7 @@ enc = tiktoken.get_encoding("gpt2")
 
 def iterate_examples():
     # there are 10,042 examples in total in val
-    with open(os.path.join("dev/data/hellaswag/data.jsonl"), "r") as f:
+    with open(os.path.join("data/hellaswag/data.jsonl"), "r") as f:
         for line in f:
             example = json.loads(line)
             yield example
@@ -22,9 +22,9 @@ def iterate_examples():
 @torch.no_grad()
 def evaluate(model_path):
 
-    device = "cuda"
+    device = "cpu" # TC
     torch.set_float32_matmul_precision('highest')
-
+    
     torch.serialization.add_safe_globals([GPTConfig])
     checkpoint = torch.load(model_path, map_location="cpu")
     model = GPT(checkpoint["config"])
@@ -36,6 +36,7 @@ def evaluate(model_path):
         for k, v in state_dict.items()
     }
     model.load_state_dict(state_dict)
+    print(model.config)
     model.eval().to(device)
 
     num_correct_norm = 0

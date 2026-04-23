@@ -14,13 +14,23 @@ echo "Using attention type: $ATTN_TYPE"
 
 # python train_gpt2.py ... (all the other arguments the same)
 # torchrun --standalone --nproc_per_node=8 train_gpt2.py \
-python train_gpt2.py \
-    --input_bin "dev/data/fineweb10B/fineweb_train_*.bin" \
-    --input_val_bin "dev/data/fineweb10B/fineweb_val_*.bin" \
+
+# old file paths
+# python train_gpt2.py \
+#     --input_bin "dev/data/fineweb10B/fineweb_train_*.bin" \
+#     --input_val_bin "dev/data/fineweb10B/fineweb_val_*.bin" \
+#     --val_loss_every 250 \
+#     --sample_every 0 \
+#     --output_dir logs \
+#     --ckpts_dir ckpts \
+
+python src/train_gpt2.py \
+    --input_bin "data/fineweb10B/fineweb_train_*.bin" \
+    --input_val_bin "data/fineweb10B/fineweb_val_*.bin" \
     --val_loss_every 250 \
     --sample_every 0 \
-    --output_dir logs \
-    --ckpts_dir ckpts \
+    --output_dir src/logs \
+    --ckpts_dir models/ckpts \
     --model d12 \
     --attn_type $ATTN_TYPE \
     --batch_size 128 \
@@ -35,4 +45,5 @@ python train_gpt2.py \
     --learning_rate 0.0006 \
     --warmup_iters 700 \
     --learning_rate_decay_frac 0.0 \
-    --overfit_single_batch 0
+    --overfit_single_batch 0 \
+    --device cuda

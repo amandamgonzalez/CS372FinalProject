@@ -1,0 +1,7 @@
+{
+  "softmax":             {"acc": 0.2863, "acc_norm": 0.3006, "correct": 3019, "total": 10042},
+  "sparsemax":           {"acc": 0.2861, "acc_norm": 0.2976, "correct": 2988, "total": 10042},
+  "dynamic_relu":        {"acc": 0.2853, "acc_norm": 0.2964, "correct": 2976, "total": 10042},
+  "entmax15":            {"acc": 0.2895, "acc_norm": 0.3023, "correct": 3036, "total": 10042},
+  "dynamic_relu_square": {"acc": 0.2882, "acc_norm": 0.2989, "correct": 3002, "total": 10042}
+}
