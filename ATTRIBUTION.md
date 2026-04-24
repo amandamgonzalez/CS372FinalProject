@@ -38,4 +38,24 @@ The [deep-spin/entmax](https://github.com/deep-spin/entmax) library provided the
 
 ## AI-generated Code
 
-*(to be completed)*
+### src/eval_gpt2.py (line 29)
+
+When I ran the evaluation script I got an error I wasn't familiar with where `torch.load` was refusing to deserialize the `GPTConfig` object saved inside the checkpoint. I asked Claude what the error meant and it explained it was a PyTorch 2.4+ security restriction that blocks loading unrecognized Python objects by default. It suggested this fix, which tells PyTorch it is safe to deserialize `GPTConfig` from a checkpoint file:
+
+```python
+torch.serialization.add_safe_globals([GPTConfig])
+```
+
+Everything else in the function is adapted from Karpathy.
+
+### src/plot_logs.py (lines 87–92)
+
+The raw training loss logs have ~18k data points and are too noisy to read directly. I asked Claude how training curves are typically smoothed in research papers and it suggested a centered moving average using `np.convolve`. The window size (550 steps) and the decision to apply it to both training loss and gradient norm were my own choices.
+
+```python
+def smooth(y, window):
+    kernel = np.ones(window) / window
+    y_smooth = np.convolve(y, kernel, mode="valid")
+    offset = window // 2
+    return offset, y_smooth
+```

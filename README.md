@@ -79,7 +79,7 @@ All five models were trained identically (GPT-2 small, 18,865 steps, FineWeb-10B
 - All five mechanisms reach comparable validation loss, suggesting sparse attention can match or exceed softmax at this scale without significant degradation.
 - Sparsemax is the sparsest mechanism (98.3% zeros), attending to fewer than 2% of tokens on average by the final layers.
 - Dynamic ReLU variants produce variable sparsity across heads (some heads nearly dense, others nearly as sparse as sparsemax), suggesting the learned β parameter allows different heads to specialize.
-- Training throughput is significantly lower for sparse mechanisms (~172k tok/s for sparsemax vs ~364k tok/s for softmax) due to the lack of FlashAttention support for custom attention functions.
+- Training throughput is significantly lower for sparse mechanisms (~172k tok/s for sparsemax vs ~364k tok/s for softmax).
 
 Qualitative attention maps and per-layer sparsity heatmaps are in `src/figures/`.
 
