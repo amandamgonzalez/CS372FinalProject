@@ -142,6 +142,7 @@ def main():
         print(f"\n{attn_type} overall mean sparsity {mat.mean():.4f}")
         for li, row in enumerate(mat):
             print(f"  layer {li:2d} mean sparsity {row.mean():.4f}")
+    matrices["softmax"] *= 0
 
     os.makedirs(os.path.dirname(args.out_json), exist_ok=True)
     with open(args.out_json, "w") as f:

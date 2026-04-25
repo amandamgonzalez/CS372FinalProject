@@ -14,7 +14,7 @@ The [deep-spin/entmax](https://github.com/deep-spin/entmax) library provided the
 
 | Library | Version | Use |
 |---|---|---|
-| PyTorch | 2.9.1 | model, training loop, autograd |
+| PyTorch | 2.10.0 | model, training loop, autograd |
 | tiktoken | 0.12.0 | GPT-2 tokenizer |
 | numpy | 2.4.3 | data sharding, log parsing |
 | matplotlib | 3.10.8 | figure generation |

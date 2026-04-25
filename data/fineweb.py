@@ -61,7 +61,7 @@ os.makedirs(HF_CACHE_DIR, exist_ok=True)
 if args.type == "classic":
     fw = load_dataset("HuggingFaceFW/fineweb", token=os.environ.get("HF_TOKEN"), name=remote_name, split="train", cache_dir=HF_CACHE_DIR)
     name = "fineweb"
-elif args.type =="edu":
+elif args.type == "edu":
     fw = load_dataset("HuggingFaceFW/fineweb-edu", name=remote_name, split="train", cache_dir=HF_CACHE_DIR)
     name = "edu_fineweb"
 

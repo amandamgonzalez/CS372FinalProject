@@ -112,19 +112,18 @@ for name, (val_steps, val_losses,
     axes[0].plot(val_steps, val_losses, color=color, label=label)
 
     # smoothed training loss
-    # applied a centered moving average over `smooth_window` steps using
-    # np.convolve with a uniform kernel, then aligning the x-axis to the midpoint of each window
-    # this removes per-step noise (~18k raw points) while preserving the curve shape
     offset, tr_smooth = smooth(tr_losses, smooth_window)
     x_smooth = tr_steps[offset : offset + len(tr_smooth)]
     axes[1].plot(x_smooth, tr_smooth, color=color, label=label)
 
     # smoothed gradient norm
-    # same moving average applied for the same reason
     offset, norm_smooth = smooth(norms, smooth_window)
     x_smooth = tr_steps[offset : offset + len(norm_smooth)]
     axes[2].plot(x_smooth, norm_smooth, color=color, label=label)
 
+
+# openai gpt-2 checkpoint val loss on fineweb, measured by karpathy (2024)
+axes[0].axhline(y=3.2924, color="#e03131", linestyle="--", linewidth=1.2, label="OpenAI GPT-2", zorder=0)
 
 step_fmt = mticker.FuncFormatter(lambda x, _: f"{int(x/1000)}k" if x >= 1000 else str(int(x)))
 

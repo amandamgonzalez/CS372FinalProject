@@ -9,3 +9,4 @@ data/fineweb10B/
 *.synctex.gz
 *.fdb_latexmk
 *.fls
+slides/

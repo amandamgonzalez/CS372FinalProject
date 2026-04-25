@@ -5,15 +5,17 @@
 \setlength{\tabcolsep}{14pt}
 
 \begin{document}
-\begin{tabular}{lccc}
-\toprule\toprule
-Attention & Val Loss & HellaSwag Acc Norm & Mean Sparsity \\
+\begin{tabular}{lcccc}
+\toprule
+Attention & Val Loss & HellaSwag Acc Norm & Mean Sparsity & Throughput \\
 \midrule
-Softmax & 3.2908 & 30.06\% & 0.00\% \\
-Sparsemax & 3.2960 & 29.76\% & \textbf{98.29\%} \\
-1.5-Entmax & 3.2780 & \textbf{30.23\%} & 93.62\% \\
-Dynamic ReLU & 3.3052 & 29.64\% & 91.95\% \\
-Dynamic ReLU\textsuperscript{2} & \textbf{3.2680} & 29.89\% & 88.39\% \\
-\bottomrule\bottomrule
+Softmax & 3.2908 & 30.06\% & 0.00\% & 363k tok/s \\
+Sparsemax & 3.2960 & 29.76\% & \textbf{98.29\%} & 171k tok/s \\
+1.5-Entmax & 3.2780 & \textbf{30.23\%} & 93.62\% & 161k tok/s \\
+Dynamic ReLU & 3.3052 & 29.64\% & 91.95\% & 259k tok/s \\
+Dynamic ReLU\textsuperscript{2} & \textbf{3.2680} & 29.89\% & 88.39\% & 254k tok/s \\
+OpenAI GPT-2$^*$ & 3.2924 & 29.40\% & 0.00\% & {---} \\
+\bottomrule
+\multicolumn{5}{l}{\small $^*$ original OpenAI checkpoint evaluated on FineWeb val and HellaSwag by Karpathy (2024).} \\
 \end{tabular}
 \end{document}

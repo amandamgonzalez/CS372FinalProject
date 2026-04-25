@@ -3,7 +3,7 @@ import math
 import torch.nn as nn
 import torch.nn.functional as F
 
-
+# sort-then-threshold algorithm
 class SparsemaxFunction(torch.autograd.Function):
     """
     adapted from https://github.com/deep-spin/entmax/blob/master/entmax/activations.py
@@ -70,7 +70,8 @@ class Entmax15Function(torch.autograd.Function):
     def forward(ctx, input, dim):
         dim = dim % input.dim()
 
-        # Subtract max for numerical stability; divide by 2 for 1.5-entmax
+        # subtract max for numerical stability
+        # divide by 2 for 1.5-entmax
         max_val = input.max(dim=dim, keepdim=True).values
         z = (input - max_val) / 2.0
 
