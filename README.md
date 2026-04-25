@@ -15,11 +15,11 @@ All five share the same scaled dot-product pre-step $s_{ij} = q_i \cdot k_j / \s
 - **1.5-Entmax** (Peters et al., 2019) $\quad a_i = (s_i / 2 - \tau)_+^2$ , $\tau$ has to be such that $\sum_i a_i = 1$
 - **Dynamic ReLU**
 
-  $$a_i = \frac{\operatorname{ReLU}(s_i - \max(s) + \sigma(\beta))}{\sum_j \operatorname{ReLU}(s_j - \max(s) + \sigma(\beta))}$$
+  $$a_i = \frac{\text{ReLU}(s_i - \max(s) + \sigma(\beta))}{\sum_j \text{ReLU}(s_j - \max(s) + \sigma(\beta))}$$
 
 - **Dynamic ReLU²**
 
-  $$a_i = \frac{\operatorname{ReLU}\!\left(\dfrac{s_i - \max(s)}{2} + \sigma(\beta)\right)^{\!2}}{\sum_j \operatorname{ReLU}\!\left(\dfrac{s_j - \max(s)}{2} + \sigma(\beta)\right)^{\!2}}$$
+  $$a_i = \frac{\text{ReLU}\!\left(\dfrac{s_i - \max(s)}{2} + \sigma(\beta)\right)^{\!2}}{\sum_j \text{ReLU}\!\left(\dfrac{s_j - \max(s)}{2} + \sigma(\beta)\right)^{\!2}}$$
 
 Softmax is always dense. Sparsemax projects onto the probability simplex, setting tokens below a threshold τ to exactly zero. 1.5-Entmax sits between these two being able to output sparse distributions which tends to be less sparse (or denser) than sparsemax. Dynamic ReLU, inspired by Wortsman et al. (2023), replaces the exponential with a ReLU shifted by σ(β) = sigmoid(β), where β is a raw unconstrained scalar that each head learns independently, controlling how wide the head's attention window is at each position. Dynamic ReLU² additionally scales the dot products by 0.5 before applying the same shift, so the full score difference $(s_i - \max(s))$ is halved before the ReLU, and then the surviving scores are squared before renormalization, concentrating weight more heavily on the highest-scoring tokens.
 
