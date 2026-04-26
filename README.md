@@ -71,7 +71,7 @@ Figures are saved to `src/figures/`.
 
 ## Video Links
 
-- **Demo:** https://youtu.be/_fBzVJCATdE
+- **Demo:** https://youtu.be/WiSdcaUC58E
 - **Technical Walkthrough:** https://youtu.be/WV6HIvYXVQI
 
 They are both also in the videos folder! Added Youtube link just in case or if it's easier!
