@@ -35,6 +35,7 @@ The [deep-spin/entmax](https://github.com/deep-spin/entmax) library provided the
 - Peters, B., Niculae, V., & Martins, A. F. T. (2019). Sparse Sequence-to-Sequence Models. *ACL 2019*. https://github.com/deep-spin/entmax
 - Wortsman, M., et al. (2023). Replacing Softmax with ReLU in Vision Transformers. *arXiv:2309.08586*. (Inspiration for the Dynamic ReLU and Dynamic ReLU² attention variants.)
 - Zellers, R., Holtzman, A., Bisk, Y., Farhadi, A., & Choi, Y. (2019). HellaSwag: Can a Machine Really Finish Your Sentence? *ACL 2019*.
+- Correia, G. M., et al. (2025). AdaSplash: Adaptive Sparse Flash Attention. *ICML 2025*. https://arxiv.org/abs/2502.12082
 
 ## AI-generated Code
 

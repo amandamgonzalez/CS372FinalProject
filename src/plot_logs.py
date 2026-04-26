@@ -123,7 +123,7 @@ for name, (val_steps, val_losses,
 
 
 # openai gpt-2 checkpoint val loss on fineweb, measured by karpathy (2024)
-axes[0].axhline(y=3.2924, color="#e03131", linestyle="--", linewidth=1.2, label="OpenAI GPT-2", zorder=0)
+axes[0].axhline(y=3.29, color="#e03131", linestyle="--", linewidth=1.2, label="OpenAI GPT-2 (approx.)", zorder=0)
 
 step_fmt = mticker.FuncFormatter(lambda x, _: f"{int(x/1000)}k" if x >= 1000 else str(int(x)))
 

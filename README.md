@@ -2,11 +2,11 @@
 
 Designing better attention mechanisms is an active area of research in transformers, with work ranging from efficient approximations to structured sparse alternatives. Most of this work, however, focuses on efficiency or is evaluated on fine-tuning tasks rather than pretraining from scratch. This project trains five GPT-2 small models from scratch, each with a distinct attention score function (Softmax, Sparsemax, 1.5-Entmax, Dynamic ReLU, and Dynamic ReLU²), and systematically evaluates the effect on training dynamics, commonsense reasoning accuracy, and per-head attention sparsity.
 
-**Research Question:** How do different attention score functions impact model quality and training efficiency in GPT-2 pretraining?
-
 ## What it Does
 
-This project investigates how replacing the standard softmax attention score function in GPT-2 affects language model training dynamics, downstream task performance, and attention sparsity. The five attention mechanisms compared are Softmax (baseline), Sparsemax, 1.5-Entmax, Dynamic ReLU, and Dynamic ReLU² (the last two being novel variants introduced in this project).
+My main research question for this project was to investigate how different attention score functions impact model quality and training efficiency in GPT-2 pretraining. To do so, I trained and compared five mechanisms including Softmax, Sparsemax, 1.5-Entmax, Dynamic ReLU, and Dynamic ReLU², the last two being novel variants introduced in this project. All five were trained from scratch on the FineWeb-10B dataset (~9.8B tokens over 18,865 steps) using an identical GPT-2 small architecture (124M parameters) and training configuration, making the attention mechanism the only variable. Models are evaluated on validation cross-entropy loss, HellaSwag commonsense reasoning accuracy, per-layer per-head attention sparsity, and training throughput. Results show that 1.5-Entmax achieves the best HellaSwag normalized accuracy (30.23%) while Dynamic ReLU² achieves the lowest validation loss (3.268), and that sparse attention mechanisms like Sparsemax produce dramatically sparser attention patterns (98.3% zeros on average) compared to the dense Softmax baseline.
+
+### Attention Score Functions
 
 All five share the same scaled dot-product pre-step $s_{ij} = q_i \cdot k_j / \sqrt{d_k}$ with causal masking and differ only in how those raw scores are mapped to attention weights.
 
@@ -20,10 +20,6 @@ All five share the same scaled dot-product pre-step $s_{ij} = q_i \cdot k_j / \s
 - **Dynamic ReLU²**
 
   $$a_i = \frac{\text{ReLU}\!\left(\dfrac{s_i - \max(s)}{2} + \sigma(\beta)\right)^{\!2}}{\sum_j \text{ReLU}\!\left(\dfrac{s_j - \max(s)}{2} + \sigma(\beta)\right)^{\!2}}$$
-
-Softmax is always dense. Sparsemax projects onto the probability simplex, setting tokens below a threshold τ to exactly zero. 1.5-Entmax sits between these two being able to output sparse distributions which tends to be less sparse (or denser) than sparsemax. Dynamic ReLU, inspired by Wortsman et al. (2023), replaces the exponential with a ReLU shifted by σ(β) = sigmoid(β), where β is a raw unconstrained scalar that each head learns independently, controlling how wide the head's attention window is at each position. Dynamic ReLU² additionally scales the dot products by 0.5 before applying the same shift, so the full score difference $(s_i - \max(s))$ is halved before the ReLU, and then the surviving scores are squared before renormalization, concentrating weight more heavily on the highest-scoring tokens.
-
-All five variants are trained from scratch on the FineWeb-10B dataset (~9.8B tokens over 18,865 steps) using an identical GPT-2 small architecture (124M parameters) and training configuration, making the attention mechanism the only variable. Models are evaluated on validation cross-entropy loss, HellaSwag commonsense reasoning accuracy, per-layer per-head attention sparsity, and training throughput. Results show that 1.5-Entmax achieves the best HellaSwag normalized accuracy (30.23%) while Dynamic ReLU² achieves the lowest validation loss (3.268), and that sparse attention mechanisms like Sparsemax produce dramatically sparser attention patterns (98.3% zeros on average) compared to the dense Softmax baseline.
 
 ## Quick Start
 
@@ -75,8 +71,10 @@ Figures are saved to `src/figures/`.
 
 ## Video Links
 
-- **Demo:** 
-- **Technical Walkthrough:** 
+- **Demo:** https://youtu.be/_fBzVJCATdE
+- **Technical Walkthrough:** https://youtu.be/8uqRrGWGqD8
+
+They are both also in the videos folder! Added Youtube link just in case or if it's easier!
 
 ## Results
 
@@ -89,9 +87,9 @@ All five models were trained identically (GPT-2 small, 18,865 steps, FineWeb-10B
 | 1.5-Entmax | 3.2780 | **30.23%** | 93.62% | 161k tok/s |
 | Dynamic ReLU | 3.3052 | 29.64% | 91.95% | 259k tok/s |
 | Dynamic ReLU² | **3.2680** | 29.89% | 88.39% | 254k tok/s |
-| OpenAI GPT-2\* | 3.2924 | 29.40% | 0.00% | N/A |
+| OpenAI GPT-2\* | ≈3.29 | 29.40% | 0.00% | N/A |
 
-\* original OpenAI checkpoint evaluated on FineWeb val and HellaSwag by Karpathy (2024).
+\* original OpenAI checkpoint evaluated on FineWeb val and HellaSwag by Karpathy (2024); val loss read approximately from training curve in llm.c discussion #481.
 
 ![Training curves across all five attention mechanisms](src/figures/training_curves.png)
 
@@ -104,6 +102,12 @@ The sparsity heatmaps show that different mechanisms produce structurally differ
 ![Attention maps for a sample phrase, one representative head per model](src/figures/attention_map.svg)
 
 Each map shown above was drawn from a single representative head and layer for each model variant. The heads were chosen independently to illustrate what each mechanism looks like qualitatively and are not selected to represent the same functional role across models. Within any single model, different heads and layers specialize in structurally different patterns, so cross-model comparison at the level of individual heads is limited. The most visible distinction is density. Softmax distributes weight broadly across the context, while the sparse mechanisms produce visibly concentrated patterns with large zero regions, attending to a small fraction of positions even for long sequences.
+
+## Novel Contributions and Comparison to Documented Baseline
+
+Dynamic ReLU and Dynamic ReLU² are attention mechanisms introduced in this project. The starting point was [Wortsman et al. (2023)](https://arxiv.org/abs/2309.08586), who showed that replacing the softmax exponential with a ReLU in vision transformers can maintain performance while producing sparse attention. Their formulation uses a fixed shift of $1/\text{sequence\_length}$. This project adapts and extends that idea to GPT-2 language model pretraining in two ways: the fixed shift is replaced by $\sigma(\beta) = \text{sigmoid}(\beta)$, where $\beta$ is a scalar learned independently by each attention head, allowing different heads to adapt their own sparsity level during training; and Dynamic ReLU² further scales the dot products by 0.5 before the shift and squares the surviving scores before renormalization, concentrating weight more heavily on the highest-scoring tokens. Neither variant appears in Wortsman et al. (2023).
+
+The OpenAI GPT-2 baseline numbers used for comparison (val loss ≈3.29, HellaSwag 29.40%) are from Karpathy (2024), who evaluated the original OpenAI GPT-2 checkpoint on FineWeb val and HellaSwag and reported results in his llm.c codebase (https://github.com/karpathy/llm.c/discussions/481). The val loss of ≈3.29 is read approximately from the training curve plot in that discussion, while the HellaSwag figure of 29.40% is stated explicitly there. Two of the five variants trained in this project outperform that baseline on both metrics. Dynamic ReLU² achieves a val loss of 3.2680 and HellaSwag accuracy of 29.89%, and 1.5-Entmax achieves a val loss of 3.2780 and HellaSwag accuracy of 30.23%, compared to ≈3.29 and 29.40% for the OpenAI checkpoint.
 
 ## Individual Contributions
 
