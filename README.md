@@ -1,6 +1,6 @@
 # A Comparative Study of Attention Score Functions in GPT-2
 
-Designing better attention mechanisms is an active area of research in transformers, with work ranging from efficient approximations to structured sparse alternatives. Most of this work, however, focuses on efficiency or is evaluated on fine-tuning tasks rather than pretraining from scratch. This project trains five GPT-2 small models from scratch, each with a distinct attention score function (Softmax, Sparsemax, 1.5-Entmax, Dynamic ReLU, and Dynamic ReLU²), and systematically evaluates the effect on training dynamics, commonsense reasoning accuracy, and per-head attention sparsity.
+This project trains five GPT-2 small models from scratch, each with a distinct attention score function, and compares their effect on validation loss, commonsense reasoning accuracy, and per-head attention sparsity. The five mechanisms are Softmax, Sparsemax, 1.5-Entmax, Dynamic ReLU, and Dynamic ReLU², where Dynamic ReLU and Dynamic ReLU² are novel variants introduced in this project.
 
 ## What it Does
 
@@ -19,7 +19,7 @@ All five share the same scaled dot-product pre-step $s_{ij} = q_i \cdot k_j / \s
 
 - **Dynamic ReLU²**
 
-  $$a_i = \frac{\text{ReLU}\!\left(\dfrac{s_i - \max(s)}{2} + \sigma(\beta)\right)^{\!2}}{\sum_j \text{ReLU}\!\left(\dfrac{s_j - \max(s)}{2} + \sigma(\beta)\right)^{\!2}}$$
+  $$a_i = \frac{\text{ReLU}\left(\dfrac{s_i - \max(s)}{2} + \sigma(\beta)\right)^{2}}{\sum_j \text{ReLU}\left(\dfrac{s_j - \max(s)}{2} + \sigma(\beta)\right)^{2}}$$
 
 ## Quick Start
 
@@ -72,7 +72,7 @@ Figures are saved to `src/figures/`.
 ## Video Links
 
 - **Demo:** https://youtu.be/_fBzVJCATdE
-- **Technical Walkthrough:** https://youtu.be/8uqRrGWGqD8
+- **Technical Walkthrough:** https://youtu.be/WV6HIvYXVQI
 
 They are both also in the videos folder! Added Youtube link just in case or if it's easier!
 
